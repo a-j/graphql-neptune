@@ -1,0 +1,29 @@
+type Segment {
+    id: ID!
+    name: String!
+    validFrom: String
+    validTo: String
+}
+
+type Customer {
+    id: ID!
+    name: String!
+    email: String
+}
+
+#type Restaurant {
+#    id: ID!
+#    name: String!
+#    address: String!
+#    zipCode: String!
+#    coOp: String
+#}
+
+type Query {
+    allSegments: [Segment]
+#    segments(customerId: ID!): [Segment]
+}
+
+schema {
+    query: Query
+}
