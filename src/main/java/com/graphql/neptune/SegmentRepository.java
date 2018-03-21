@@ -20,7 +20,7 @@ public class SegmentRepository {
         List<Map<Object, Object>> valueMap = g.V().hasLabel("SEGMENT").valueMap(true).toList();
 
         for (Map map : valueMap) {
-            segments.add(new Segment(map.get(T.id).toString(), map.get("name").toString(), null, null));
+            segments.add(new Segment(map.get(T.id).toString(), ((List) map.get("name")).get(0).toString(), null, null));
         }
 
         return segments;
@@ -32,7 +32,7 @@ public class SegmentRepository {
         List<Map<Object, Object>> valueMap = g.V().hasId(customerId).out("PART_OF").valueMap(true).toList();
 
         for (Map map : valueMap) {
-            segments.add(new Segment(map.get(T.id).toString(), map.get("name").toString(), null, null));
+            segments.add(new Segment(map.get(T.id).toString(), ((List) map.get("name")).get(0).toString(), null, null));
         }
 
         return segments;
