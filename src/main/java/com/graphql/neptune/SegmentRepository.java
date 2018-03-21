@@ -1,6 +1,5 @@
 package com.graphql.neptune;
 
-import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.T;
 
@@ -30,10 +29,11 @@ public class SegmentRepository {
     public List<Segment> getSegments(String customerId) {
         List<Segment> segments = new ArrayList<>();
 
-        GraphTraversal t = g.V().hasId(customerId).out("PART_OF").values("name");
-        t.forEachRemaining(e ->
-                segments.add(new Segment(e.toString(), null, null))
-        );
+        List<Map<Object, Object>> valueMap = g.V().hasId(customerId).out("PART_OF").valueMap(true).toList();
+
+        for (Map map : valueMap) {
+            segments.add(new Segment(map.get(T.id).toString(), map.get("name").toString(), null, null));
+        }
 
         return segments;
     }
