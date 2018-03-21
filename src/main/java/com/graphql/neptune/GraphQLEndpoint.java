@@ -3,6 +3,10 @@ package com.graphql.neptune;
 import com.coxautodev.graphql.tools.SchemaParser;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.SimpleGraphQLServlet;
+import org.apache.tinkerpop.gremlin.driver.Cluster;
+import org.apache.tinkerpop.gremlin.driver.remote.DriverRemoteConnection;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.util.empty.EmptyGraph;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -11,7 +15,14 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
     private static final SegmentRepository segmentRepository;
 
     static {
-        segmentRepository = new SegmentRepository();
+        Cluster.Builder builder = Cluster.build();
+        builder.addContactPoint("offergraphpoc-cluster.cluster-c1cqn0xh64pt.us-east-1-beta.rds.amazonaws.com");
+        builder.port(8182);
+
+        Cluster cluster = builder.create();
+        GraphTraversalSource g = EmptyGraph.instance().traversal().withRemote(DriverRemoteConnection.using(cluster));
+
+        segmentRepository = new SegmentRepository(g);
     }
 
     public GraphQLEndpoint() {
