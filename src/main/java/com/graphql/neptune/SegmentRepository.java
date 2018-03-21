@@ -28,7 +28,7 @@ public class SegmentRepository {
     public List<Segment> getSegments(String customerId) {
         List<Segment> segments = new ArrayList<>();
 
-        GraphTraversal t = g.V().has(T.id, customerId).out("PART_OF");
+        GraphTraversal t = g.V().has(T.id, customerId).out("PART_OF").values("name");
         t.forEachRemaining(e ->
                 segments.add(new Segment(e.toString(), null, null))
         );
