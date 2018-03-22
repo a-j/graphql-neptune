@@ -37,4 +37,28 @@ public class SegmentRepository {
 
         return segments;
     }
+
+    public Profile getProfile(String customerId) {
+        Map<Object, Object> map = g.V().hasId(customerId).out("HAS_PROFILE").valueMap(true).next();
+
+        Profile profile = new Profile();
+        profile.setId(map.get(T.id).toString());
+        profile.setAge(Integer.valueOf(((List) map.get("age")).get(0).toString()));
+        profile.setAddress(((List) map.get("address")).get(0).toString());
+        profile.setCity(((List) map.get("city")).get(0).toString());
+        profile.setState(((List) map.get("state")).get(0).toString());
+        profile.setZipcode(((List) map.get("zipcode")).get(0).toString());
+
+        return profile;
+    }
+
+    public Customer getCustomer(String customerId) {
+        Map<Object, Object> map = g.V().hasId(customerId).valueMap(true).next();
+
+        Customer customer = new Customer(map.get(T.id).toString(), ((List) map.get("name")).get(0).toString());
+        customer.setProfile(getProfile(customerId));
+        customer.setSegments(getSegments(customerId));
+
+        return customer;
+    }
 }

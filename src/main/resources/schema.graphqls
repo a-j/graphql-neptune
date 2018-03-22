@@ -8,12 +8,23 @@ type Segment {
 type Customer {
     id: ID!
     name: String!
-    email: String
+    profile: Profile
+    segments: [Segment]
+}
+
+type Profile {
+    id: ID!
+    age: Int
+    address: String
+    city: String
+    state: String
+    zipcode: String
 }
 
 type Query {
     allSegments: [Segment]
     segments(customerId: ID!): [Segment]
+    customer(customerId: ID!): Customer
 }
 
 schema {

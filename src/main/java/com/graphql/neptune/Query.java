@@ -20,4 +20,7 @@ public class Query implements GraphQLQueryResolver {
         return segmentRepository.getSegments(customerId);
     }
 
+    public Customer customer(String customerId) {
+        return segmentRepository.getCustomer(customerId);
+    }
 }
