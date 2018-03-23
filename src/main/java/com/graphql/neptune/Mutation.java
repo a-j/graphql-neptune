@@ -11,7 +11,7 @@ public class Mutation implements GraphQLMutationResolver {
 
     public Segment createSegment(String id, String name) {
         Segment segment = new Segment(id, name, null, null);
-
+        this.segmentRepository.saveSegment(segment);
         return segment;
     }
 }
