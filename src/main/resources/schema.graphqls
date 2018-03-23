@@ -27,6 +27,11 @@ type Query {
     customer(customerId: ID!): Customer
 }
 
+type Mutation {
+    createSegment(id: ID!, name: String!): Segment
+}
+
 schema {
     query: Query
+    mutation: Mutation
 }

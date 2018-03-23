@@ -61,4 +61,8 @@ public class SegmentRepository {
 
         return customer;
     }
+
+    public void saveSegment(Segment segment) {
+        g.addV("SEGMENT").property(T.id, segment.getId()).property("name", segment.getName()).next();
+    }
 }
