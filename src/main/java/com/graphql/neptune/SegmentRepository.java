@@ -67,10 +67,10 @@ public class SegmentRepository {
         g.addV("SEGMENT").property(T.id, segment.getId()).property("name", segment.getName()).next();
     }
 
-    public Customer saveCustomer(Customer customer, String[] segmentIds) {
+    public Customer saveCustomer(Customer customer, List<String> segmentIds) {
         Vertex customverVertex = g.addV("CUSTOMER").property(T.id, customer.getId()).property("name", customer.getName()).next();
 
-        if (segmentIds == null || segmentIds.length <= 0) {
+        if (segmentIds == null || segmentIds.size() <= 0) {
             return customer;
         }
 

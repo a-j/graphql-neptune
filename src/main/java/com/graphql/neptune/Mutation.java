@@ -2,6 +2,8 @@ package com.graphql.neptune;
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 
+import java.util.List;
+
 public class Mutation implements GraphQLMutationResolver {
     private final SegmentRepository segmentRepository;
 
@@ -15,7 +17,7 @@ public class Mutation implements GraphQLMutationResolver {
         return segment;
     }
 
-    public Customer createCustomer(String id, String name, String[] segmentIds) {
+    public Customer createCustomer(String id, String name, List<String> segmentIds) {
         Customer customer = new Customer(id, name);
         customer = this.segmentRepository.saveCustomer(customer, segmentIds);
         return customer;
