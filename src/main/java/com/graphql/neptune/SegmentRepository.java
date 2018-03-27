@@ -2,6 +2,7 @@ package com.graphql.neptune;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,5 +65,22 @@ public class SegmentRepository {
 
     public void saveSegment(Segment segment) {
         g.addV("SEGMENT").property(T.id, segment.getId()).property("name", segment.getName()).next();
+    }
+
+    public Customer saveCustomer(Customer customer, String[] segmentIds) {
+        Vertex customverVertex = g.addV("CUSTOMER").property(T.id, customer.getId()).property("name", customer.getName()).next();
+
+        if (segmentIds == null || segmentIds.length <= 0) {
+            return customer;
+        }
+
+        List<Segment> segments = new ArrayList<>();
+        for (String segmentId : segmentIds) {
+            Vertex segmentVertex = g.V().hasId(segmentId).next();
+            customverVertex.addEdge("PART_OF", segmentVertex);
+            segments.add(new Segment(segmentId, segmentVertex.property("name").toString(), null, null));
+        }
+        customer.setSegments(segments);
+        return customer;
     }
 }
