@@ -84,7 +84,7 @@ public class SegmentRepository {
 
             List<Segment> segments = new ArrayList<>();
             for (String segmentId : segmentIds) {
-                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customer.getId()).addE("PART_OF").to("segmentVertex");
+                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customer.getId()).addE("PART_OF").to("segmentVertex").next();
                 String segmentName = g.V().hasId(segmentId).values("name").next().toString();
                 logger.info("Adding segment {}", segmentName);
                 segments.add(new Segment(segmentId, segmentName, null, null));
