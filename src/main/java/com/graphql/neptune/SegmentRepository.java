@@ -3,12 +3,15 @@ package com.graphql.neptune;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SegmentRepository {
+    private static Logger logger = LoggerFactory.getLogger(SegmentRepository.class);
     private final GraphTraversalSource g;
 
     public SegmentRepository(GraphTraversalSource g) {
@@ -64,23 +67,34 @@ public class SegmentRepository {
     }
 
     public void saveSegment(Segment segment) {
-        g.addV("SEGMENT").property(T.id, segment.getId()).property("name", segment.getName()).next();
+        try {
+            g.addV("SEGMENT").property(T.id, segment.getId()).property("name", segment.getName()).next();
+        } catch (Exception e) {
+            logger.error("Exception saving segment: ", e);
+        }
     }
 
     public Customer saveCustomer(Customer customer, List<String> segmentIds) {
-        Vertex customverVertex = g.addV("CUSTOMER").property(T.id, customer.getId()).property("name", customer.getName()).next();
+        try {
+            Vertex customerVertex = g.addV("CUSTOMER").property(T.id, customer.getId()).property("name", customer.getName()).next();
+            logger.info("Customer {} added", customer.getId());
 
-        if (segmentIds == null || segmentIds.size() <= 0) {
-            return customer;
-        }
+            if (segmentIds == null || segmentIds.size() <= 0) {
+                return customer;
+            }
 
-        List<Segment> segments = new ArrayList<>();
-        for (String segmentId : segmentIds) {
-            Vertex segmentVertex = g.V().hasId(segmentId).next();
-            customverVertex.addEdge("PART_OF", segmentVertex);
-            segments.add(new Segment(segmentId, segmentVertex.property("name").toString(), null, null));
+            List<Segment> segments = new ArrayList<>();
+            for (String segmentId : segmentIds) {
+                Vertex segmentVertex = g.V().hasId(segmentId).next();
+                logger.info("Adding segment {}", segmentVertex.property("name").toString());
+                customerVertex.addEdge("PART_OF", segmentVertex);
+                segments.add(new Segment(segmentId, segmentVertex.property("name").toString(), null, null));
+            }
+            logger.info("Segments for Customer {} saved", customer.getId());
+            customer.setSegments(segments);
+        } catch (Exception e) {
+            logger.error("Exception saving customer: ", e);
         }
-        customer.setSegments(segments);
         return customer;
     }
 }
