@@ -2,7 +2,6 @@ package com.graphql.neptune;
 
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +75,7 @@ public class SegmentRepository {
 
     public Customer saveCustomer(Customer customer, List<String> segmentIds) {
         try {
-            Vertex customerVertex = g.addV("CUSTOMER").property(T.id, customer.getId()).property("name", customer.getName()).next();
+            g.addV("CUSTOMER").property(T.id, customer.getId()).property("name", customer.getName()).next();
             logger.info("Customer {} added", customer.getId());
 
             if (segmentIds == null || segmentIds.size() <= 0) {
@@ -85,10 +84,10 @@ public class SegmentRepository {
 
             List<Segment> segments = new ArrayList<>();
             for (String segmentId : segmentIds) {
-                Vertex segmentVertex = g.V().hasId(segmentId).next();
-                logger.info("Adding segment {}", segmentVertex.property("name").toString());
-                customerVertex.addEdge("PART_OF", segmentVertex);
-                segments.add(new Segment(segmentId, segmentVertex.property("name").toString(), null, null));
+                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customer.getId()).addE("PART_OF").to("segmentVertex");
+                String segmentName = g.V().hasId(segmentId).values("name").next().toString();
+                logger.info("Adding segment {}", segmentName);
+                segments.add(new Segment(segmentId, segmentName, null, null));
             }
             logger.info("Segments for Customer {} saved", customer.getId());
             customer.setSegments(segments);
