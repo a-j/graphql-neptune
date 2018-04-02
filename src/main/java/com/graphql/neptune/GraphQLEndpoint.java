@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 
 @WebServlet(urlPatterns = "/graphql")
 public class GraphQLEndpoint extends SimpleGraphQLServlet {
+    private static final CustomerRepository customerRepository;
     private static final SegmentRepository segmentRepository;
 
     static {
@@ -22,6 +23,7 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
         Cluster cluster = builder.create();
         GraphTraversalSource g = EmptyGraph.instance().traversal().withRemote(DriverRemoteConnection.using(cluster));
 
+        customerRepository = new CustomerRepository(g);
         segmentRepository = new SegmentRepository(g);
     }
 
@@ -32,7 +34,9 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
     private static GraphQLSchema buildSchema() {
         return SchemaParser.newParser()
                 .file("schema.graphqls")
-                .resolvers(new Query(segmentRepository), new Mutation(segmentRepository))
+                .resolvers(
+                        new Query(customerRepository, segmentRepository), 
+                        new Mutation(customerRepository, segmentRepository))
                 .build()
                 .makeExecutableSchema();
     }

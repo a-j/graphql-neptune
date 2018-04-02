@@ -5,10 +5,11 @@ import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import java.util.List;
 
 public class Query implements GraphQLQueryResolver {
-
+    private final CustomerRepository customerRepository;
     private final SegmentRepository segmentRepository;
 
-    public Query(SegmentRepository segmentRepository) {
+    public Query(CustomerRepository customerRepository, SegmentRepository segmentRepository) {
+        this.customerRepository = customerRepository;
         this.segmentRepository = segmentRepository;
     }
 
@@ -17,10 +18,12 @@ public class Query implements GraphQLQueryResolver {
     }
 
     public List<Segment> segments(String customerId) {
-        return segmentRepository.getSegments(customerId);
+        return segmentRepository.getSegmentsByCustomerId(customerId);
     }
 
     public Customer customer(String customerId) {
-        return segmentRepository.getCustomer(customerId);
+        Customer customer = customerRepository.getCustomer(customerId);
+        customer.setSegments(segmentRepository.getSegmentsByCustomerId(customerId));
+        return customer;
     }
 }

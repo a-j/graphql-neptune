@@ -29,7 +29,7 @@ public class SegmentRepository {
         return segments;
     }
 
-    public List<Segment> getSegments(String customerId) {
+    public List<Segment> getSegmentsByCustomerId(String customerId) {
         List<Segment> segments = new ArrayList<>();
 
         try {
@@ -45,35 +45,6 @@ public class SegmentRepository {
         return segments;
     }
 
-    public Profile getProfile(String customerId) {
-        Profile profile = new Profile();
-
-        try {
-            Map<Object, Object> map = g.V().hasId(customerId).out("HAS_PROFILE").valueMap(true).next();
-
-            profile.setId(map.get(T.id).toString());
-            profile.setAge(Integer.valueOf(((List) map.get("age")).get(0).toString()));
-            profile.setAddress(((List) map.get("address")).get(0).toString());
-            profile.setCity(((List) map.get("city")).get(0).toString());
-            profile.setState(((List) map.get("state")).get(0).toString());
-            profile.setZipcode(((List) map.get("zipcode")).get(0).toString());
-        } catch (Exception e) {
-            logger.error("Profile not found for user {}", customerId, e);
-        }
-
-        return profile;
-    }
-
-    public Customer getCustomer(String customerId) {
-        Map<Object, Object> map = g.V().hasId(customerId).valueMap(true).next();
-
-        Customer customer = new Customer(map.get(T.id).toString(), ((List) map.get("name")).get(0).toString());
-        customer.setProfile(getProfile(customerId));
-        customer.setSegments(getSegments(customerId));
-
-        return customer;
-    }
-
     public void saveSegment(Segment segment) {
         try {
             g.addV("SEGMENT").property(T.id, segment.getId()).property("name", segment.getName()).next();
@@ -82,16 +53,13 @@ public class SegmentRepository {
         }
     }
 
-    public Customer saveCustomer(Customer customer, List<String> segmentIds) {
+    public List<Segment> saveSegmentsForCustomer(Customer customer, List<String> segmentIds) {
+        List<Segment> segments = new ArrayList<>();
         try {
-            g.addV("CUSTOMER").property(T.id, customer.getId()).property("name", customer.getName()).next();
-            logger.info("Customer {} added", customer.getId());
-
             if (segmentIds == null || segmentIds.size() <= 0) {
-                return customer;
+                return segments;
             }
 
-            List<Segment> segments = new ArrayList<>();
             for (String segmentId : segmentIds) {
                 g.V().hasId(segmentId).as("segmentVertex").V().hasId(customer.getId()).addE("PART_OF").to("segmentVertex").next();
                 String segmentName = g.V().hasId(segmentId).values("name").next().toString();
@@ -103,6 +71,6 @@ public class SegmentRepository {
         } catch (Exception e) {
             logger.error("Exception saving customer: ", e);
         }
-        return customer;
+        return segments;
     }
 }
