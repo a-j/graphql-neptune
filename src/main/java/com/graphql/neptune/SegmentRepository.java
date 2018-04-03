@@ -102,7 +102,7 @@ public class SegmentRepository {
             }
             logger.info("Customer Id: {} | Segment Ids: {}", customerId, segmentIds.toString());
 
-            g.V().hasId(customerId).outE("PART_OF").drop().next();
+            g.V().hasId(customerId).outE("PART_OF").drop().tryNext();
             logger.info("Edges for customer id {} dropped", customerId);
 
             for (String segmentId : segmentIds) {
