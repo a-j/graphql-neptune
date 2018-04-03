@@ -106,7 +106,7 @@ public class SegmentRepository {
             logger.info("Edges for customer id {} dropped", customerId);
 
             for (String segmentId : segmentIds) {
-                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex");
+                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").tryNext();
                 logger.info("Associated segment {} to customer {}", segmentId, customerId);
             }
             logger.info("Segments for Customer {} refreshed", customerId);
