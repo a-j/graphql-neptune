@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class SegmentRepository {
     private static Logger logger = LoggerFactory.getLogger(SegmentRepository.class);
@@ -93,5 +94,15 @@ public class SegmentRepository {
             logger.error("Exception saving customer: ", e);
         }
         return segments;
+    }
+
+    public void createSegmentIfNotExists(AudienceInput audienceInput) {
+        try {
+            String segmentId = "seg" + UUID.randomUUID().toString();
+            g.addV("SEGMENT").property(T.id, segmentId).property("age", audienceInput.getAge())
+                    .property("city", audienceInput.getCity()).property("state", audienceInput.getState()).next();
+        } catch (Exception e) {
+            logger.error("Exception creating segment: ", e);
+        }
     }
 }

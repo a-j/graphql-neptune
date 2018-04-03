@@ -21,6 +21,13 @@ type Profile {
     zipcode: String
 }
 
+input AudienceInput {
+    age: String
+    city: String
+    state: String
+    zipcode: String
+}
+
 type Query {
     allSegments: [Segment]
     segments(customerId: ID!): [Segment]
@@ -31,6 +38,7 @@ type Query {
 type Mutation {
     createSegment(id: ID!, name: String!): Segment
     createCustomer(customerId: ID!, name: String! segments: [ID]): Customer
+    createTargetAudience(audience: AudienceInput!): [Customer]
 }
 
 schema {
