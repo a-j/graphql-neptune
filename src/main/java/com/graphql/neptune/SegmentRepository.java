@@ -45,27 +45,6 @@ public class SegmentRepository {
         return segments;
     }
 
-    public List<Segment> getCurrentSegmentsByCustomerId(String customerId) {
-        List<Segment> segments = new ArrayList<>();
-
-        try {
-            Map<Object, Object> map = g.V().hasLabel("DATA_LOAD").valueMap(true).next();
-            Integer version = ((List<Integer>) map.get("version")).get(0);
-            logger.info("Current data load version: {}", version);
-
-            List<Map<Object, Object>> valueMap = g.V().hasId(customerId).outE("PART_OF")
-                    .property("version", version).inV().valueMap(true).toList();
-
-            for (Map entry : valueMap) {
-                segments.add(new Segment(entry.get(T.id).toString(), ((List) entry.get("name")).get(0).toString(), null, null));
-            }
-        } catch (Exception e) {
-            logger.error("Segments not found for user {}", customerId, e);
-        }
-
-        return segments;
-    }
-
     public void saveSegment(Segment segment) {
         try {
             g.addV("SEGMENT").property(T.id, segment.getId()).property("name", segment.getName()).next();
@@ -102,12 +81,12 @@ public class SegmentRepository {
             }
             logger.info("Customer Id: {} | Segment Ids: {}", customerId, segmentIds.toString());
 
-            g.V().hasId(customerId).outE("PART_OF").drop().next();
+            g.V().hasId(customerId).outE("PART_OF").drop().tryNext();
             logger.info("Edges for customer id {} dropped", customerId);
 
             for (String segmentId : segmentIds) {
-                logger.info("Associating segment {} to customer {}", segmentId, customerId);
-                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").next();
+                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").tryNext();
+                logger.info("Associated segment {} to customer {}", segmentId, customerId);
             }
             logger.info("Segments for Customer {} refreshed", customerId);
         } catch (Exception e) {
