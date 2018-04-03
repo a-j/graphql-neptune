@@ -31,6 +31,7 @@ type Query {
 type Mutation {
     createSegment(id: ID!, name: String!): Segment
     createCustomer(customerId: ID!, name: String! segments: [ID]): Customer
+    refreshSegments(customerId: ID!, segments: [ID]): Customer
 }
 
 schema {

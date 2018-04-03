@@ -94,4 +94,21 @@ public class SegmentRepository {
         }
         return segments;
     }
+
+    public void refreshSegmentsForCustomer(String customerId, List<String> segmentIds) {
+        try {
+            if (segmentIds == null || segmentIds.size() <= 0) {
+                return;
+            }
+
+            g.V().hasId(customerId).outE("PART_OF").drop();
+
+            for (String segmentId : segmentIds) {
+                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").next();
+            }
+            logger.info("Segments for Customer {} refreshed", customerId);
+        } catch (Exception e) {
+            logger.error("Exception saving customer: ", e);
+        }
+    }
 }
