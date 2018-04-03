@@ -21,6 +21,10 @@ public class Query implements GraphQLQueryResolver {
         return segmentRepository.getSegmentsByCustomerId(customerId);
     }
 
+    public List<Segment> currentSegments(String customerId) {
+        return segmentRepository.getCurrentSegmentsByCustomerId(customerId);
+    }
+
     public Customer customer(String customerId) {
         Customer customer = customerRepository.getCustomer(customerId);
         customer.setSegments(segmentRepository.getSegmentsByCustomerId(customerId));

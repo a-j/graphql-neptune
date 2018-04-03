@@ -24,6 +24,7 @@ type Profile {
 type Query {
     allSegments: [Segment]
     segments(customerId: ID!): [Segment]
+    currentSegments(customerId: ID!): [Segment]
     customer(customerId: ID!): Customer
 }
 
