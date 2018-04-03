@@ -107,7 +107,7 @@ public class SegmentRepository {
 
             for (String segmentId : segmentIds) {
                 logger.info("Associating segment {} to customer {}", segmentId, customerId);
-                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").next();
+                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex");
             }
             logger.info("Segments for Customer {} refreshed", customerId);
         } catch (Exception e) {
