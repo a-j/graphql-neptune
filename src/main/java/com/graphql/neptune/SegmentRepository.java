@@ -90,7 +90,7 @@ public class SegmentRepository {
             logger.info("Segments for Customer {} saved", customer.getId());
             customer.setSegments(segments);
         } catch (Exception e) {
-            logger.error("Exception saving customer: ", e);
+            logger.error("Exception saving segments for customer: ", e);
         }
         return segments;
     }
@@ -100,15 +100,18 @@ public class SegmentRepository {
             if (segmentIds == null || segmentIds.size() <= 0) {
                 return;
             }
+            logger.info("Customer Id: {} | Segment Ids: {}", customerId, segmentIds.toString());
 
             g.V().hasId(customerId).outE("PART_OF").drop();
+            logger.info("Edges for customer id {} dropped", customerId);
 
             for (String segmentId : segmentIds) {
+                logger.info("Associating segment {} to customer {}", segmentId, customerId);
                 g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").next();
             }
             logger.info("Segments for Customer {} refreshed", customerId);
         } catch (Exception e) {
-            logger.error("Exception saving customer: ", e);
+            logger.error("Exception refreshing segments for customer: ", e);
         }
     }
 }
