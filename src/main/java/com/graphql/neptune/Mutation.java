@@ -28,6 +28,8 @@ public class Mutation implements GraphQLMutationResolver {
 
     public Customer refreshSegments(String customerId, List<String> segmentIds) {
         segmentRepository.refreshSegmentsForCustomer(customerId, segmentIds);
-        return customerRepository.getCustomer(customerId);
+        Customer customer = customerRepository.getCustomer(customerId);
+        customer.setSegments(segmentRepository.getSegmentsByCustomerId(customerId));
+        return customer;
     }
 }
