@@ -102,12 +102,12 @@ public class SegmentRepository {
             }
             logger.info("Customer Id: {} | Segment Ids: {}", customerId, segmentIds.toString());
 
-            g.V().hasId(customerId).outE("PART_OF").drop().next();
+            g.V().hasId(customerId).outE("PART_OF").drop();
             logger.info("Edges for customer id {} dropped", customerId);
 
             for (String segmentId : segmentIds) {
-                logger.info("Associating segment {} to customer {}", segmentId, customerId);
-                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").next();
+                g.V().hasId(segmentId).as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex");
+                logger.info("Associated segment {} to customer {}", segmentId, customerId);
             }
             logger.info("Segments for Customer {} refreshed", customerId);
         } catch (Exception e) {
