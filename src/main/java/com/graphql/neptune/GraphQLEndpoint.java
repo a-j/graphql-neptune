@@ -19,7 +19,7 @@ public class GraphQLEndpoint extends SimpleGraphQLServlet {
         Cluster.Builder builder = Cluster.build();
         builder.addContactPoint("offergraphpoc-cluster.cluster-c1cqn0xh64pt.us-east-1-beta.rds.amazonaws.com");
         builder.minConnectionPoolSize(10);
-        builder.maxConnectionPoolSize(100);
+        builder.maxConnectionPoolSize(500);
         builder.port(8182);
 
         Cluster cluster = builder.create();
