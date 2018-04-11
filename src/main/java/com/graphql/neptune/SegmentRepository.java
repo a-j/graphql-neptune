@@ -98,7 +98,6 @@ public class SegmentRepository {
         try {
             for (String customerId : customerIds) {
                 g.V().hasId("seg33").as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").tryNext();
-                logger.info("Associated segment {} to customer {}", "seg33", customerId);
             }
         } catch (Exception e) {
             logger.error("Exception creating segments for customers", e);

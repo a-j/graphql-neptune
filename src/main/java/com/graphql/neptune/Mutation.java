@@ -1,10 +1,14 @@
 package com.graphql.neptune;
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Mutation implements GraphQLMutationResolver {
     private static Logger logger = LoggerFactory.getLogger(Mutation.class);
@@ -45,11 +49,41 @@ public class Mutation implements GraphQLMutationResolver {
         logger.info("Got customers satisfying criteria in {}ms", (endTime - startTime)/1000000);
 
         startTime = System.nanoTime();
-        segmentRepository.createSegmentsForCustomers(customerIds);
+        List<List<String>> customersList = Lists.partition(customerIds, 20);
+        try {
+            ExecutorService executor = Executors.newFixedThreadPool(20);
+            for (List<String> subList : customersList) {
+                executor.execute(new SegmentsCreator(segmentRepository, customerIds));
+            }
+            executor.shutdown();
+            executor.awaitTermination(2, TimeUnit.HOURS);
+
+        } catch (Exception e) {
+            logger.error("Exception occurred", e);
+        }
         endTime = System.nanoTime();
         logger.info("Created segment relations for customers in {}ms", (endTime - startTime)/1000000);
 
         Customer customer = new Customer("", "");
         return customer;
+    }
+}
+class SegmentsCreator implements Runnable {
+    private final SegmentRepository segmentRepository;
+    private final List<String> customerIds;
+
+    public SegmentsCreator (SegmentRepository segmentRepository, List<String> customerIds) {
+        this.segmentRepository = segmentRepository;
+        this.customerIds = customerIds;
+    }
+
+    @Override
+    public void run() {
+        try {
+            segmentRepository.createSegmentsForCustomers(customerIds);
+        } catch (Exception e) {
+            System.err.println("Exception occurred in thread");
+            e.printStackTrace();
+        }
     }
 }
