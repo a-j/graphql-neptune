@@ -41,6 +41,7 @@ public class Mutation implements GraphQLMutationResolver {
         long startTime = System.nanoTime();
         List<String> customerIds = customerRepository.getCustomersSatisfyingCriteria();
         long endTime = System.nanoTime();
+        logger.info("Number of customers satisfying criteria: {}", customerIds.size());
         logger.info("Got customers satisfying criteria in {}ms", (endTime - startTime)/1000000);
 
         startTime = System.nanoTime();
