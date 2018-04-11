@@ -1,10 +1,12 @@
 package com.graphql.neptune;
 
+import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,5 +54,17 @@ public class CustomerRepository {
             logger.error("Exception saving customer: ", e);
         }
         return customer;
+    }
+
+    public List<String> getCustomersSatisfyingCriteria() {
+        List<String> customerIds = new ArrayList<>();
+        try {
+            Map<Object, Object> map = g.V().hasLabel("PROFILE").has("state", "Illinois").has("age", P.lte(60)).in("HAS_PROFILE")
+                                        .valueMap(true).next();
+            customerIds.add(map.get(T.id).toString());
+        } catch (Exception e) {
+            logger.error("Exception getting customers", e);
+        }
+        return customerIds;
     }
 }

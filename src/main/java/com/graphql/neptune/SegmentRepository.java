@@ -93,4 +93,14 @@ public class SegmentRepository {
             logger.error("Exception refreshing segments for customer: ", e);
         }
     }
+
+    public void createSegmentsForCustomers(List<String> customerIds) {
+        try {
+            for (String customerId : customerIds) {
+                g.V().hasId("seg33").as("segmentVertex").V().hasId(customerId).addE("PART_OF").to("segmentVertex").tryNext();
+            }
+        } catch (Exception e) {
+            logger.error("Exception creating segments for customers", e);
+        }
+    }
 }
