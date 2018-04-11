@@ -59,9 +59,12 @@ public class CustomerRepository {
     public List<String> getCustomersSatisfyingCriteria() {
         List<String> customerIds = new ArrayList<>();
         try {
-            Map<Object, Object> map = g.V().hasLabel("PROFILE").has("state", "Illinois").has("age", P.lte(60)).in("HAS_PROFILE")
-                                        .valueMap(true).next();
-            customerIds.add(map.get(T.id).toString());
+            List<Map<Object, Object>> valueMap = g.V().hasLabel("PROFILE").has("state", "Illinois").has("age", P.lte(60)).in("HAS_PROFILE")
+                                        .valueMap(true).toList();
+
+            for (Map map : valueMap) {
+                customerIds.add(map.get(T.id).toString());
+            }
         } catch (Exception e) {
             logger.error("Exception getting customers", e);
         }
